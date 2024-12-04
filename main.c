@@ -1,7 +1,7 @@
 #include <stdio.h>
 #include <string.h>
 #include <stdlib.h>
-int players;
+int playerNum;
 
 struct card {
 	char suit;
@@ -9,6 +9,7 @@ struct card {
 };
 
 void shuffle(struct card* deck) {
+    srand(time(0));
 	for(int i = 0; i < 4; i++) {
 		for(int j = 0; j < 13; j++) {
 			struct card* c = malloc(sizeof(struct card));
@@ -67,73 +68,73 @@ void shuffle(struct card* deck) {
 
 void game() {
 	struct card* deck = malloc(sizeof(struct card) * 52);
-	int* sum = calloc(players,sizeof(int));
-	int* hasAce = calloc(players,sizeof(int));
+	int* sum = calloc(playerNum,sizeof(int));
+	int* hasAce = calloc(playerNum,sizeof(int));
 	shuffle(deck);
 	//printf("\nYou got a %c of %c!",(deck[1].value), (deck[1].suit));
 
-	int loc = 0;
+	int location = 0;
 
-	for(int i = 1; i <= players; i++) {
+	for(int i = 1; i <= playerNum; i++) {
 		int choice;
 		char* hand = calloc(10,sizeof(char));
 		int inc = 0;
 		
 		for(int j = 0; j < 2; j++){
 		    	struct card* c = malloc(sizeof(struct card));
-				c = &deck[loc];
+				c = &deck[location];
 				hand[inc] = c->value;
 				
-				int val = c->value - '0';
+				int valueue = c->value - '0';
 				
 				switch(c->value){
 				    case 'T':
 				    case 'J':
 				    case 'Q':
 				    case 'K':
-				        val = 10;
+				        valueue = 10;
 				        break;
 				    case 'A':
-				        val = 1;
+				        valueue = 1;
 				        hasAce[i-1] ++;
 				        break;
 				}
 				
-				sum[i-1] += val;
+				sum[i-1] += valueue;
 				
-				loc++;
+				location++;
 				inc++;
-				loc = loc%52;
+				location = location%52;
 		}
 		
 		do {
-			printf("\nPlayer %d's turn: 1 to deal, 2 to check your hand, anything else to stay. ", i);
+			printf("\nPlayer %d's turn: 1 to deal, 2 to check your hand, any other number else to stay. ", i);
 			scanf("%d",&choice);
 			if(choice == 1) {
 				struct card* c = malloc(sizeof(struct card));
-				c = &deck[loc];
+				c = &deck[location];
 				hand[inc] = c->value;
 				
-				int val = c->value - '0';
+				int value = c->value - '0';
 				
 				switch(c->value){
 				    case 'T':
 				    case 'J':
 				    case 'Q':
 				    case 'K':
-				        val = 10;
+				        value = 10;
 				        break;
 				    case 'A':
-				        val = 1;
+				        value = 1;
 				        hasAce[i-1] ++;
 				        break;
 				}
 				
-				sum[i-1] += val;
+				sum[i-1] += value;
 				
-				loc++;
+				location++;
 				inc++;
-				loc = loc%52;
+				location = location%52;
 				printf("You got a %c of %c!\n",(c->value), (c->suit));
 			} else if(choice == 2) {
 			    printf("\n");
@@ -148,10 +149,10 @@ void game() {
 	}
 	
 	int highest = 0;
-	int* winners = calloc(players,sizeof(int));
-	loc = 0;
+	int* winners = calloc(playerNum,sizeof(int));
+	location = 0;
 	
-	for(int i = 0; i < players; i++){
+	for(int i = 0; i < playerNum; i++){
 	    for(int j = 0; j < hasAce[i]; j++){
 	        if(sum[j] + 10 <= 21){
 	            sum[j] += 10;
@@ -166,11 +167,11 @@ void game() {
 	    
 	    if(sum[i]>highest){
 	        highest = sum[i];
-            memset(winners, players, 0);
-	        loc = 1;
+            memset(winners, playerNum, 0);
+	        location = 1;
 	        winners[0] = i+1;
 	    }else if(sum[i]==highest){
-	        winners[loc] = i+1;
+	        winners[location] = i+1;
 	    }
 	}
 	
@@ -195,7 +196,7 @@ void game() {
 }
 
 void instructions(){
-    printf("\nThe goal of 21 is to be the player to get the closest to 21 (in terms of card value) without going over.\nThe cards are from your standard deck. Numbered cards are worth their face value, J, Q, K are worth 10, and aces can be worth 1 or 11 depending on whether or not you surpass 21.\nAs a player, you can choose to deal, view, or stay.\n deal: get dealt a card (adds to your hand).\n view: views your current hand and what cards you have.\n stay: ends your turn\n");
+    printf("\nThe goal of 21 is to be the player to get the closest to 21 (in terms of card value) without going over.\nThe cards are from your standard deck. Numbered cards are worth their face value, J, Q, K are worth 10, and aces can be worth 1 or 11 depending on whether or not you surpass 21.\nYou start with 2 cards.\nAs a player, you can choose to deal, view, or stay.\n deal: get dealt a card (adds to your hand).\n view: views your current hand and what cards you have.\n stay: ends your turn\n");
 }
 
 int main()
@@ -203,21 +204,20 @@ int main()
     printf("Welcome to 21!");
     int choice;
     do{
-        printf("\nEnter 1 to play, 2 to view the instructions, anything else to quit. ");
+        printf("\nEnter 1 to play, 2 to view the instructions, any other number to quit. ");
         scanf("%d", &choice);
         if(choice == 1){
             printf("\nHow many players are there? (2-10) ");
-            scanf("%d",&players);
-            while(players > 10 || players < 2){
+            scanf("%d",&playerNum);
+            while(playerNum > 10 || playerNum < 2){
                 printf("\nPlease input a value between 2 and 10 inclusive: ");
-                scanf("%d",&players);
+                scanf("%d",&playerNum);
             }
     	    game();
         }else if(choice == 2){
             instructions();
         }
     }while(choice > 0 &&  choice < 3);
-    printf("\nThank you for playing!");
-
+    	printf("\nThank you for playing!");
 	return 0;
 }
