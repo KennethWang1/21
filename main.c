@@ -9,7 +9,7 @@ struct card {
 };
 
 void shuffle(struct card* deck) {
-    srand(time(0));
+	srand(time(0));
 	for(int i = 0; i < 4; i++) {
 		for(int j = 0; j < 13; j++) {
 			struct card* c = malloc(sizeof(struct card));
@@ -61,8 +61,8 @@ void shuffle(struct card* deck) {
 			n2 = rand()%52;
 		}
 		struct card temp = deck[n1];
-        deck[n1] = deck[n2];
-        deck[n2] = temp;
+		deck[n1] = deck[n2];
+		deck[n2] = temp;
 	}
 }
 
@@ -79,34 +79,34 @@ void game() {
 		int choice;
 		char* hand = calloc(10,sizeof(char));
 		int inc = 0;
-		
-		for(int j = 0; j < 2; j++){
-		    	struct card* c = malloc(sizeof(struct card));
-				c = &deck[location];
-				hand[inc] = c->value;
-				
-				int valueue = c->value - '0';
-				
-				switch(c->value){
-				    case 'T':
-				    case 'J':
-				    case 'Q':
-				    case 'K':
-				        valueue = 10;
-				        break;
-				    case 'A':
-				        valueue = 1;
-				        hasAce[i-1] ++;
-				        break;
-				}
-				
-				sum[i-1] += valueue;
-				
-				location++;
-				inc++;
-				location = location%52;
+
+		for(int j = 0; j < 2; j++) {
+			struct card* c = malloc(sizeof(struct card));
+			c = &deck[location];
+			hand[inc] = c->value;
+
+			int valueue = c->value - '0';
+
+			switch(c->value) {
+			case 'T':
+			case 'J':
+			case 'Q':
+			case 'K':
+				valueue = 10;
+				break;
+			case 'A':
+				valueue = 1;
+				hasAce[i-1] ++;
+				break;
+			}
+
+			sum[i-1] += valueue;
+
+			location++;
+			inc++;
+			location = location%52;
 		}
-		
+
 		do {
 			printf("\nPlayer %d's turn: 1 to deal, 2 to check your hand, any other number else to stay. ", i);
 			scanf("%d",&choice);
@@ -114,110 +114,110 @@ void game() {
 				struct card* c = malloc(sizeof(struct card));
 				c = &deck[location];
 				hand[inc] = c->value;
-				
+
 				int value = c->value - '0';
-				
-				switch(c->value){
-				    case 'T':
-				    case 'J':
-				    case 'Q':
-				    case 'K':
-				        value = 10;
-				        break;
-				    case 'A':
-				        value = 1;
-				        hasAce[i-1] ++;
-				        break;
+
+				switch(c->value) {
+				case 'T':
+				case 'J':
+				case 'Q':
+				case 'K':
+					value = 10;
+					break;
+				case 'A':
+					value = 1;
+					hasAce[i-1] ++;
+					break;
 				}
-				
+
 				sum[i-1] += value;
-				
+
 				location++;
 				inc++;
 				location = location%52;
 				printf("You got a %c of %c!\n",(c->value), (c->suit));
 			} else if(choice == 2) {
-			    printf("\n");
-                for(int j = 0; j < 10; j++){
-                    if(hand[j] == 0){
-                        break;
-                    }
-                    printf("%c ",hand[j]);
-                }
+				printf("\n");
+				for(int j = 0; j < 10; j++) {
+					if(hand[j] == 0) {
+						break;
+					}
+					printf("%c ",hand[j]);
+				}
 			}
 		} while(choice == 1 || choice == 2);
 	}
-	
+
 	int highest = 0;
 	int* winners = calloc(playerNum,sizeof(int));
 	location = 0;
-	
-	for(int i = 0; i < playerNum; i++){
-	    for(int j = 0; j < hasAce[i]; j++){
-	        if(sum[j] + 10 <= 21){
-	            sum[j] += 10;
-	        }else{
-	            break;
-	        }
-	    }
-	    
-	    if(sum[i] > 21){
-	        continue;
-	    }
-	    
-	    if(sum[i]>highest){
-	        highest = sum[i];
-            memset(winners, playerNum, 0);
-	        location = 1;
-	        winners[0] = i+1;
-	    }else if(sum[i]==highest){
-	        winners[location] = i+1;
-	    }
+
+	for(int i = 0; i < playerNum; i++) {
+		for(int j = 0; j < hasAce[i]; j++) {
+			if(sum[j] + 10 <= 21) {
+				sum[j] += 10;
+			} else {
+				break;
+			}
+		}
+
+		if(sum[i] > 21) {
+			continue;
+		}
+
+		if(sum[i]>highest) {
+			highest = sum[i];
+			memset(winners, playerNum, 0);
+			location = 1;
+			winners[0] = i+1;
+		} else if(sum[i]==highest) {
+			winners[location] = i+1;
+		}
 	}
-	
+
 	printf("\nThe winner(s) is/are: ");
-	
-	for(int j = 0; j < 10; j++){
-        if(winners[j] == 0){
-            break;
-        }
-        printf("Player %d ",winners[j]);
-    }
-    
-    if(winners[0] == 0){
-        printf("noone");
-    }
-    
-    printf("\n");
-    
+
+	for(int j = 0; j < 10; j++) {
+		if(winners[j] == 0) {
+			break;
+		}
+		printf("Player %d ",winners[j]);
+	}
+
+	if(winners[0] == 0) {
+		printf("noone");
+	}
+
+	printf("\n");
+
 	free(sum);
 	free(hasAce);
 	free(deck);
 }
 
-void instructions(){
-    printf("\nThe goal of 21 is to be the player to get the closest to 21 (in terms of card value) without going over.\nThe cards are from your standard deck. Numbered cards are worth their face value, J, Q, K are worth 10, and aces can be worth 1 or 11 depending on whether or not you surpass 21.\nYou start with 2 cards.\nAs a player, you can choose to deal, view, or stay.\n deal: get dealt a card (adds to your hand).\n view: views your current hand and what cards you have.\n stay: ends your turn\n");
+void instructions() {
+	printf("\nThe goal of 21 is to be the player to get the closest to 21 (in terms of card value) without going over.\nThe cards are from your standard deck. Numbered cards are worth their face value, J, Q, K are worth 10, and aces can be worth 1 or 11 depending on whether or not you surpass 21.\nYou start with 2 cards.\nAs a player, you can choose to deal, view, or stay.\n deal: get dealt a card (adds to your hand).\n view: views your current hand and what cards you have.\n stay: ends your turn\n");
 }
 
 int main()
 {
-    printf("Welcome to 21!");
-    int choice;
-    do{
-        printf("\nEnter 1 to play, 2 to view the instructions, any other number to quit. ");
-        scanf("%d", &choice);
-        if(choice == 1){
-            printf("\nHow many players are there? (2-10) ");
-            scanf("%d",&playerNum);
-            while(playerNum > 10 || playerNum < 2){
-                printf("\nPlease input a value between 2 and 10 inclusive: ");
-                scanf("%d",&playerNum);
-            }
-    	    game();
-        }else if(choice == 2){
-            instructions();
-        }
-    }while(choice > 0 &&  choice < 3);
-    	printf("\nThank you for playing!");
+	printf("Welcome to 21!");
+	int choice;
+	do {
+		printf("\nEnter 1 to play, 2 to view the instructions, any other number to quit. ");
+		scanf("%d", &choice);
+		if(choice == 1) {
+			printf("\nHow many players are there? (2-10) ");
+			scanf("%d",&playerNum);
+			while(playerNum > 10 || playerNum < 2) {
+				printf("\nPlease input a value between 2 and 10 inclusive: ");
+				scanf("%d",&playerNum);
+			}
+			game();
+		} else if(choice == 2) {
+			instructions();
+		}
+	} while(choice > 0 &&  choice < 3);
+	printf("\nThank you for playing!");
 	return 0;
 }
